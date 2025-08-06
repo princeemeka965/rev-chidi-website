@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+    --primary-color: #3d99f5;
+    --secondary-color: #f0f2f5;
+    --text-primary: #111418;
+    --text-secondary: #6c757d;
+    --background-color: #ffffff;
+    --card-bg: #f8f9fa;
+}
+
+.ministry-section {
+    transform: transition-all duration-500 ease-in-out;
+}
+
+.ministry-section:hover {
+    transform: scale(1.05);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+.nav-link {
+    @apply text-[var(--text-primary)] text-sm font-medium leading-normal relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[var(--primary-color)] after:transition-all after:duration-300 hover:after:w-full;
+}
+
+.active-nav-link {
+    @apply text-[var(--primary-color)] font-bold;
+}
+
+.filter-button {
+    @apply px-12 py-2 text-sm font-medium rounded-full transition-colors duration-300;
+}
+
+.active-filter {
+    @apply bg-[var(--primary-color)] text-white;
+}
+
+.inactive-filter {
+    @apply bg-[var(--secondary-color)] text-[var(--text-secondary)] hover:bg-gray-300 hover:text-[var(--text-primary)];
+}
+
+.gallery-item {
+    transition: all 0.5s ease-in-out;
+}
+
+.event-card {
+    @apply flex gap-4 bg-[var(--background-color)] p-4 rounded-lg border border-transparent transition-all hover:shadow-lg hover:border-[var(--secondary-color)];
+}
+
+button {
+    cursor: pointer;
+}
+
+.texture-bg {
+    --texture-url: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: var(--texture-url);
+}

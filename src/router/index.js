@@ -26,6 +26,16 @@ const routes = [
     path: '/events',
     name: 'events',
     component: () => import('../views/Events.vue')
+  },
+  {
+    path: '/contact',
+    name: 'contact',
+    component: () => import('../views/Contact.vue')
+  },
+  {
+    path: '/donate',
+    name: 'donate',
+    component: () => import('../views/Donate.vue')
   }
 ]
 

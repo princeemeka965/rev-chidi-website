@@ -1,5 +1,5 @@
 <script setup>
-import { Facebook, Twitter, Instagram } from 'lucide-vue-next'
+import { Facebook, Twitter, Instagram, Youtube } from 'lucide-vue-next'
 </script>
 
 <template>
@@ -10,14 +10,11 @@ import { Facebook, Twitter, Instagram } from 'lucide-vue-next'
           <h3 class="text-lg font-bold text-white">Rev. Dr.Chidi Okoroafor</h3>
           <p class="mt-2 text-sm">Spreading the Gospel, empowering believers.</p>
           <div class="mt-4 flex space-x-4">
-            <a class="text-gray-400 hover:text-white transition-colors" href="#">
+            <a class="text-gray-400 hover:text-white transition-colors" href="https://web.facebook.com/Chidiokoroafor13" target="_blank">
               <Facebook class="w-6 h-6" />
             </a>
-            <a class="text-gray-400 hover:text-white transition-colors" href="#">
-              <Twitter class="w-6 h-6" />
-            </a>
-            <a class="text-gray-400 hover:text-white transition-colors" href="#">
-              <Instagram class="w-6 h-6" />
+            <a class="text-gray-400 hover:text-white transition-colors" target="_blank" href="https://www.youtube.com/@chidiokoroaformessages-kk9jwv">
+              <Youtube class="w-6 h-6" />
             </a>
           </div>
         </div>

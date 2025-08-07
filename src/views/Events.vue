@@ -1,163 +1,226 @@
 <template>
-  <div class="bg-[var(--background-color)] min-h-screen">
-    <main class="px-4 md:px-10 lg:px-20 xl:px-40 py-10">
+  <div class="bg-gray-50 min-h-screen">
+    <main class="px-4 md:px-6 lg:px-8 py-8 md:py-12">
       <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-12">
-          <h2 class="text-[var(--text-primary)] tracking-tight text-3xl md:text-5xl font-bold leading-tight font-serif">
+        <!-- Hero Section with Animation -->
+        <div class="text-center mb-12 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight font-serif">
             Upcoming Events
           </h2>
-          <p class="text-[var(--text-secondary)] mt-2 text-lg">
-            Join us for crusades, speaking engagements, and media appearances.
+          <p class="mt-3 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto animate-slide-up">
+            Join us for powerful crusades, transformative conferences, and spirit-filled gatherings
           </p>
         </div>
 
         <!-- Calendar Section -->
-        <div class="flex flex-col items-center gap-8">
-          <div class="flex flex-col gap-6 w-full max-w-2xl">
-            <div class="flex min-w-72 flex-1 flex-col bg-white p-6 rounded-xl shadow-md">
-              <!-- Month Navigation -->
-              <div class="flex items-center justify-between pb-4">
-                <button 
-                  class="p-2 rounded-full hover:bg-[var(--secondary-color)] transition-colors"
-                  @click="prevMonth"
-                >
-                  <ChevronLeft class="w-5 h-5" />
-                </button>
-                <h3 class="text-[var(--text-primary)] text-xl font-bold leading-tight font-serif">
-                  {{ currentMonthName }} {{ currentYear }}
-                </h3>
-                <button 
-                  class="p-2 rounded-full hover:bg-[var(--secondary-color)] transition-colors"
-                  @click="nextMonth"
-                >
-                  <ChevronRight class="w-5 h-5" />
-                </button>
-              </div>
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+          <!-- Calendar Card -->
+          <div class="w-full lg:w-96 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <!-- Month Navigation -->
+            <div class="flex items-center justify-between p-4 border-b">
+              <button 
+                class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                @click="prevMonth"
+                aria-label="Previous month"
+              >
+                <ChevronLeft class="w-5 h-5 text-gray-700" />
+              </button>
+              <h3 class="text-xl font-bold text-gray-900 font-serif">
+                {{ currentMonthName }} {{ currentYear }}
+              </h3>
+              <button 
+                class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                @click="nextMonth"
+                aria-label="Next month"
+              >
+                <ChevronRight class="w-5 h-5 text-gray-700" />
+              </button>
+            </div>
 
-              <!-- Days of Week Header -->
-              <div class="grid grid-cols-7 gap-1 text-center mb-2">
-                <p 
-                  v-for="day in daysOfWeek" 
-                  :key="day"
-                  class="text-[var(--text-secondary)] text-xs font-bold uppercase py-2"
-                >
-                  {{ day }}
-                </p>
+            <!-- Days of Week Header -->
+            <div class="grid grid-cols-7 gap-1 px-4 pt-4">
+              <div 
+                v-for="day in daysOfWeek" 
+                :key="day"
+                class="text-xs font-medium text-gray-500 text-center pb-2"
+              >
+                {{ day }}
               </div>
+            </div>
 
-              <!-- Calendar Days -->
-              <div class="grid grid-cols-7 gap-1 text-center">
-                <div 
-                  v-for="n in startDay" 
-                  :key="'empty-' + n"
-                  class="h-12 w-full"
-                ></div>
-                
-                <button 
-                  v-for="day in daysInMonth" 
-                  :key="day"
-                  class="h-12 w-full flex flex-col items-center justify-center rounded-lg transition-all duration-200 relative group"
+            <!-- Calendar Days Grid -->
+            <div class="grid grid-cols-7 gap-1 p-4">
+              <!-- Empty cells for days before the 1st -->
+              <div 
+                v-for="n in startDay" 
+                :key="'empty-' + n"
+                class="aspect-square"
+              ></div>
+              
+              <!-- Days of the month -->
+              <button
+                v-for="day in daysInMonth"
+                :key="day"
+                class="aspect-square flex flex-col items-center justify-center rounded-lg transition-all duration-200 relative group"
+                :class="{
+                  'text-gray-900 hover:bg-gray-100': !isSelectedDay(day) && !isEventDay(day),
+                  'text-white bg-blue-600 shadow-md': isSelectedDay(day),
+                  'text-blue-700 font-bold': isEventDay(day) && !isSelectedDay(day),
+                  'ring-2 ring-blue-400': isToday(day) && !isSelectedDay(day),
+                  'scale-105': hoveredDay === day
+                }"
+                @mouseenter="hoveredDay = day"
+                @mouseleave="hoveredDay = null"
+                @click="selectDay(day)"
+                :aria-label="`View events for ${currentMonthName} ${day}, ${currentYear}`"
+              >
+                <span class="text-sm">{{ day }}</span>
+                <!-- Event indicator dot -->
+                <span 
+                  v-if="isEventDay(day)"
+                  class="absolute bottom-2 h-2 w-2 rounded-full transition-all"
                   :class="{
-                    'text-[var(--text-primary)] hover:bg-[var(--secondary-color)]': !isSelectedDay(day) && !isEventDay(day),
-                    'text-white bg-[var(--primary-color)] shadow-md': isSelectedDay(day),
-                    'text-[var(--primary-color)] font-bold': isEventDay(day) && !isSelectedDay(day),
-                    'ring-2 ring-blue-500': isToday(day) && !isSelectedDay(day),
-                    'scale-105': hoveredDay === day
+                    'bg-white': isSelectedDay(day),
+                    'bg-blue-600 animate-pulse': !isSelectedDay(day)
                   }"
-                  @mouseenter="hoveredDay = day"
-                  @mouseleave="hoveredDay = null"
-                  @click="toggleDay(day)"
-                >
-                  <span class="text-sm">{{ day }}</span>
-                  <span 
-                    v-if="isEventDay(day)"
-                    class="absolute bottom-1 h-2 w-2 rounded-full transition-all"
-                    :class="{
-                      'bg-white': isSelectedDay(day),
-                      'bg-[var(--primary-color)] animate-pulse': !isSelectedDay(day)
-                    }"
-                  ></span>
-                  <span 
-                    v-if="isEventDay(day) && !isSelectedDay(day)"
-                    class="absolute -bottom-1 opacity-0 group-hover:opacity-100 group-hover:-bottom-2 transition-all duration-300 text-[10px] font-medium text-[var(--primary-color)]"
-                  >
-                    {{ getEventCount(day) }} event{{ getEventCount(day) > 1 ? 's' : '' }}
-                  </span>
-                </button>
-              </div>
+                ></span>
+                <!-- Today indicator -->
+                <span 
+                  v-if="isToday(day) && !isSelectedDay(day)"
+                  class="absolute bottom-1 h-1 w-1 rounded-full bg-blue-400"
+                ></span>
+              </button>
             </div>
           </div>
 
-          <!-- Event Dropdown Section -->
-          <div 
-            class="w-full max-w-4xl transition-all duration-500 overflow-hidden"
-            :class="{
-              'max-h-0': !showEventDetails,
-              'max-h-[800px]': showEventDetails
-            }"
-            v-if="selectedDayEvents.length > 0"
-          >
-            <div class="bg-white rounded-xl shadow-md border border-[var(--secondary-color)]">
+          <!-- Events Panel -->
+          <div class="flex-1 w-full">
+            <!-- Selected Date Header -->
+            <div 
+              v-if="selectedDay"
+              class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 transition-all duration-500"
+              :class="{
+                'opacity-0 translate-y-4': !showEventDetails,
+                'opacity-100 translate-y-0': showEventDetails
+              }"
+            >
+              <div class="p-6 border-b">
+                <h3 class="text-2xl font-bold text-gray-900 font-serif">
+                  Events on {{ formatSelectedDate() }}
+                </h3>
+                <p class="text-gray-600 mt-1">
+                  {{ selectedDayEvents.length }} event{{ selectedDayEvents.length !== 1 ? 's' : '' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Events List -->
+            <div 
+              v-if="selectedDayEvents.length > 0"
+              class="space-y-4 transition-all duration-500"
+              :class="{
+                'opacity-0 translate-y-4': !showEventDetails,
+                'opacity-100 translate-y-0': showEventDetails
+              }"
+            >
               <div 
-                v-for="(event, index) in selectedDayEvents" 
+                v-for="(event, index) in selectedDayEvents"
                 :key="event.id"
-                class="border-b border-[var(--secondary-color)] last:border-b-0"
-                :class="{
-                  'opacity-0 translate-y-4': !showEventDetails,
-                  'opacity-100 translate-y-0': showEventDetails,
-                  'transition-delay-100': index === 0,
-                  'transition-delay-200': index === 1,
-                  'transition-delay-300': index === 2
-                }"
+                class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg"
+                :style="`transition-delay: ${index * 50}ms`"
               >
-                <div class="p-6">
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <h3 class="text-[var(--text-primary)] text-xl font-bold font-serif">{{ event.title }}</h3>
-                      <p class="text-[var(--text-secondary)] mt-1 text-sm">
-                        {{ formatTime(event.startDate) }}
-                        <span v-if="event.endDate"> - {{ formatTime(event.endDate) }}</span>
-                      </p>
-                    </div>
-                    <span class="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                <!-- Event Image -->
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                  <img 
+                    :src="event.image" 
+                    :alt="event.title"
+                    class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  >
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  <div class="absolute bottom-4 left-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold text-white bg-blue-600">
                       {{ eventTypeLabel(event.type) }}
                     </span>
                   </div>
-                  <p class="text-[var(--text-secondary)] mt-3 text-sm">{{ event.description }}</p>
-                  <div class="flex items-center mt-3 gap-2 text-[var(--text-secondary)]">
-                    <MapPin class="h-4 w-4 flex-shrink-0" />
+                </div>
+
+                <!-- Event Details -->
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-3">
+                    <h3 class="text-xl font-bold text-gray-900 font-serif">{{ event.title }}</h3>
+                    <div class="text-sm text-gray-500">
+                      {{ formatTime(event.startDate) }}
+                      <span v-if="event.endDate"> - {{ formatTime(event.endDate) }}</span>
+                    </div>
+                  </div>
+                  
+                  <p class="text-gray-600 mb-4">{{ event.description }}</p>
+                  
+                  <div class="flex items-center text-gray-600">
+                    <MapPin class="h-4 w-4 mr-2 flex-shrink-0" />
                     <span class="text-sm">{{ event.location }}</span>
                   </div>
                 </div>
-                <div 
-                  v-if="event.image"
-                  class="h-92 bg-[var(--secondary-color)] relative overflow-hidden"
-                >
-                  <img 
-                    :alt="event.title" 
-                    class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                    :src="event.image"
-                  />
-                </div>
-                <div class="p-4 bg-gray-50">
-                  <button 
-                    class="w-full flex items-center justify-center gap-2 rounded-md h-10 px-4 bg-[var(--primary-color)] text-white text-sm font-bold transition-all hover:scale-[1.02]"
+
+                <!-- Event CTA -->
+                <div class="px-6 pb-6">
+                  <a 
+                    :href="event.link || '#'"
+                    target="_blank"
+                    class="inline-flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    <ArrowRight class="w-3 h-3" />
-                    View Details
-                  </button>
+                    Register Now
+                    <ArrowRight class="ml-2 w-4 h-4" />
+                  </a>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- No Event Message -->
-          <div 
-            v-if="selectedDayEvents.length === 0 && showEventDetails"
-            class="w-full max-w-4xl text-center py-8 text-[var(--text-secondary)] bg-white rounded-xl shadow-md border border-[var(--secondary-color)] transition-all duration-500"
-          >
-            <CalendarX class="w-10 h-10 mx-auto mb-3 text-[var(--primary-color)]" />
-            <p class="text-base">No events scheduled for this date</p>
+            <!-- No Events Message -->
+            <div 
+              v-if="selectedDayEvents.length === 0 && selectedDay"
+              class="bg-white rounded-xl shadow-lg p-8 text-center transition-all duration-500"
+              :class="{
+                'opacity-0 translate-y-4': !showEventDetails,
+                'opacity-100 translate-y-0': showEventDetails
+              }"
+            >
+              <CalendarX class="w-12 h-12 mx-auto text-blue-500 mb-4" />
+              <h3 class="text-xl font-bold text-gray-900 mb-2 font-serif">No Events Scheduled</h3>
+              <p class="text-gray-600">
+                There are no events scheduled for {{ formatSelectedDate() }}.<br>
+                Check back later or browse other dates.
+              </p>
+            </div>
+
+            <!-- Upcoming Highlights -->
+            <div 
+              v-if="!selectedDay"
+              class="bg-white rounded-xl shadow-lg p-6 animate-fade-in"
+            >
+              <h3 class="text-xl font-bold text-gray-900 mb-4 font-serif">Upcoming Highlights</h3>
+              <div class="space-y-4">
+                <div 
+                  v-for="event in upcomingHighlightEvents"
+                  :key="event.id"
+                  class="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                  @click="navigateToEventDate(event)"
+                >
+                  <div class="flex-shrink-0 w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <span class="text-blue-600 font-bold text-lg">
+                      {{ formatDay(event.startDate) }}
+                    </span>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900">{{ event.title }}</h4>
+                    <p class="text-sm text-gray-500 mt-1">
+                      {{ formatTime(event.startDate) }}
+                      <span v-if="event.endDate"> - {{ formatTime(event.endDate) }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -182,47 +245,84 @@ const showEventDetails = ref(false)
 const currentMonth = ref(new Date().getMonth())
 const currentYear = ref(new Date().getFullYear())
 
-// Sample events data (updated for 2025)
+// Sample events data with Gospel-inspired images
 const events = ref([
   {
     id: 1,
-    title: 'Lagos Crusade',
+    title: 'Holy Ghost Crusade',
     type: 'crusade',
     startDate: new Date(2025, 6, 12, 18, 0),
     endDate: new Date(2025, 6, 14, 21, 0),
-    description: 'Join us for a powerful 3-day crusade in the heart of Lagos. Experience miracles, healing, and a mighty move of God.',
-    location: 'National Stadium, Surulere, Lagos, Nigeria',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOJehhmZsGs2xd66Dojg19Wib0mH0OV1YR_J8I1JPGBrP6WvQCHUICEA9z2jh_pnN-RruP0bcgXeYYmRwcf2yCB9iAWq7lE57wIvU7A-RCgYI3n9jBlia_pwpz0xTGOELAaecmUQsmrmxHBoDgGo_Q5cKtbnDRfCsIvricogeNxM_RL2nA8iNda5N89-__hZ8nDhjlx3G7Qb8NtVMJG2gjoh0T1Ebjrj9upGjsO1QOx0TkAbQt3C3yxq2V7IGzmewxxUC0DUW3V6A'
+    description: 'Experience the power of God in this 3-day crusade with miracles, healings, and deliverance. Join thousands of believers as we worship and pray together.',
+    location: 'National Stadium, Lagos, Nigeria',
+    image: 'https://res.cloudinary.com/campnet/image/upload/v1754656784/crusade_audience_praising_god.jpg',
+    link: 'https://example.com/crusade-registration'
   },
   {
     id: 2,
-    title: 'Morning Prayer Session',
+    title: 'Morning Devotion',
     type: 'prayer',
     startDate: new Date(2025, 6, 12, 7, 0),
     endDate: new Date(2025, 6, 12, 8, 0),
-    description: 'Early morning prayer session for spiritual renewal and breakthrough.',
+    description: 'Start your day with powerful prayers and biblical teaching. This online session will equip you spiritually for the day ahead.',
     location: 'Online Zoom Meeting',
-    image: ''
+    image: 'https://res.cloudinary.com/campnet/image/upload/v1754656784/prayer_meeting.jpg',
+    link: 'https://example.com/prayer-zoom'
   },
   {
     id: 3,
-    title: 'Youth Empowerment Conference',
+    title: 'Kingdom Youth Conference',
     type: 'conference',
     startDate: new Date(2025, 6, 20, 9, 0),
     endDate: new Date(2025, 6, 22, 17, 0),
-    description: 'A transformative conference for young people to discover their purpose and develop leadership skills.',
-    location: 'Convention Center, Abuja, Nigeria',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCG7p9okLY_oNkfGHy6JC5yn_6yvNrThs4bMhxTtX_YEY5ZUrd9BGlXNcKLtIxZRjFnYbCco5x7_vR8nCSNwzyjkuPKRlcbSpfnA0ZHBy5yeA3igz-ZqG0ha25GukAZacqGkUC9wAIOK_EcyTceV-x-zRKC_eAGuo7u6eLqBLexqQJIl7E7hV64qsoRCAifvKqTE5wz5gqP25JDDfaBhd7FoSwsEDjFdFTKhbuVxdOO-WWhqyztoOyxQjzkjfSoYFof7IyEt8QhKBk'
+    description: 'A transformative conference designed to empower young believers with biblical principles for success, purpose discovery, and leadership development.',
+    location: 'Faith Convention Center, Abuja, Nigeria',
+    image: 'https://res.cloudinary.com/campnet/image/upload/v1754656784/youth_conference_worship.jpg',
+    link: 'https://example.com/youth-conference'
   },
   {
     id: 4,
-    title: 'TV Interview',
+    title: 'Gospel TV Interview',
     type: 'media',
     startDate: new Date(2025, 6, 4, 20, 0),
-    description: 'Live interview discussing faith and contemporary issues.',
-    location: 'Christian Broadcasting Network',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBNXQS6B1lgSglRyLtiFjUihFVoffzCBtn_BGBbFsd3jzAp962JiyD0xTwPyKosEhFMU7-2Wn25Dx36tch7MxqkgFGx-VLPriHix55j2bCbQcodXfqg4Kh9PFhw6pC_Iqclo9UAAw8Zab_xUejWnsEgw5RGT1Jzs9ZBYi9K0af0kZ8XfQBZ4Z2oLpBoyoEeU_2s3ZcNSiefBDVUtaF0KK9xJWfcv0ZS_pJZUjudd3Ox4OtK-BJDy5-ygRcQLfKl0KEmK9fxvv5Mpac'
-  }
+    description: 'Live interview discussing contemporary issues from a biblical perspective and sharing insights on spiritual growth.',
+    location: 'Heavenly Voices TV Network',
+    image: 'https://res.cloudinary.com/campnet/image/upload/v1754656784/tv_interview.jpg',
+    link: 'https://example.com/tv-schedule'
+  },
+  {
+    id: 5,
+    title: 'Healing Service',
+    type: 'crusade',
+    startDate: new Date(2025, 6, 28, 17, 0),
+    endDate: new Date(2025, 6, 28, 20, 0),
+    description: 'Special service focused on divine healing and miracles. Come expecting your breakthrough!',
+    location: 'Revival Pavilion AG, Enugu, Nigeria',
+    image: 'https://res.cloudinary.com/campnet/image/upload/v1754656784/healing_service.jpg',
+    link: 'https://example.com/healing-service'
+  },
+  {
+    id: 6,
+    title: 'Holy Ghost Crusade',
+    type: 'crusade',
+    startDate: new Date(2025, 8, 15, 18, 0),
+    endDate: new Date(2025, 8, 15, 21, 0),
+    description: 'Experience the power of God in this 3-day crusade with miracles, healings, and deliverance. Join thousands of believers as we worship and pray together.',
+    location: 'National Stadium, Lagos, Nigeria',
+    image: 'https://res.cloudinary.com/campnet/image/upload/v1754656784/crusade_audience_praising_god.jpg',
+    link: 'https://example.com/crusade-registration'
+  },
+  {
+    id: 7,
+    title: 'Healing Service',
+    type: 'crusade',
+    startDate: new Date(2025, 8, 28, 17, 0),
+    endDate: new Date(2025, 8, 28, 20, 0),
+    description: 'Special service focused on divine healing and miracles. Come expecting your breakthrough!',
+    location: 'Revival Pavilion AG, Enugu, Nigeria',
+    image: 'https://res.cloudinary.com/campnet/image/upload/v1754656784/healing_service.jpg',
+    link: 'https://example.com/healing-service'
+  },
 ])
 
 // Calendar calculations
@@ -244,7 +344,25 @@ const startDay = computed(() => {
 const getEventCount = (day) => {
   const date = new Date(currentYear.value, currentMonth.value, day)
   return events.value.filter(event => 
-    (event.startDate <= date && (!event.endDate || event.endDate >= date))).length
+    isEventOnDate(event, date)
+  ).length
+}
+
+const isEventOnDate = (event, date) => {
+  const eventStart = new Date(event.startDate)
+  const eventEnd = event.endDate ? new Date(event.endDate) : eventStart
+  
+  // Normalize dates to midnight for comparison
+  const compareDate = new Date(date)
+  compareDate.setHours(0, 0, 0, 0)
+  
+  const normEventStart = new Date(eventStart)
+  normEventStart.setHours(0, 0, 0, 0)
+  
+  const normEventEnd = new Date(eventEnd)
+  normEventEnd.setHours(0, 0, 0, 0)
+  
+  return compareDate >= normEventStart && compareDate <= normEventEnd
 }
 
 const isEventDay = (day) => {
@@ -267,7 +385,18 @@ const selectedDayEvents = computed(() => {
   if (!selectedDay.value) return []
   const date = new Date(currentYear.value, currentMonth.value, selectedDay.value)
   return events.value.filter(event => 
-    (event.startDate <= date && (!event.endDate || event.endDate >= date)))
+    isEventOnDate(event, date)
+  ).sort((a, b) => a.startDate - b.startDate)
+})
+
+const upcomingHighlightEvents = computed(() => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  
+  return events.value
+    .filter(event => new Date(event.startDate) >= today)
+    .sort((a, b) => a.startDate - b.startDate)
+    .slice(0, 3)
 })
 
 const eventTypeLabel = (type) => {
@@ -281,11 +410,26 @@ const eventTypeLabel = (type) => {
 }
 
 const formatTime = (date) => {
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  })
 }
 
-const formatDate = (date) => {
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+const formatDay = (date) => {
+  return date.getDate()
+}
+
+const formatSelectedDate = () => {
+  if (!selectedDay.value) return ''
+  const date = new Date(currentYear.value, currentMonth.value, selectedDay.value)
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    month: 'long', 
+    day: 'numeric', 
+    year: 'numeric' 
+  })
 }
 
 // Calendar navigation
@@ -296,7 +440,7 @@ const prevMonth = () => {
   } else {
     currentMonth.value--
   }
-  showEventDetails.value = false
+  resetSelection()
 }
 
 const nextMonth = () => {
@@ -306,29 +450,94 @@ const nextMonth = () => {
   } else {
     currentMonth.value++
   }
-  showEventDetails.value = false
+  resetSelection()
 }
 
-const toggleDay = (day) => {
-  if (selectedDay.value === day && showEventDetails.value) {
-    showEventDetails.value = false
+const selectDay = (day) => {
+  if (selectedDay.value === day) {
+    // Toggle if clicking the same day
+    showEventDetails.value = !showEventDetails.value
   } else {
+    // Select new day
     selectedDay.value = day
     showEventDetails.value = true
   }
 }
 
-// Initialize with today's date
+const resetSelection = () => {
+  selectedDay.value = null
+  showEventDetails.value = false
+}
+
+const navigateToEventDate = (event) => {
+  const eventDate = new Date(event.startDate)
+  currentMonth.value = eventDate.getMonth()
+  currentYear.value = eventDate.getFullYear()
+  selectedDay.value = eventDate.getDate()
+  showEventDetails.value = true
+  
+  // Smooth scroll to events section
+  nextTick(() => {
+    const element = document.querySelector('.events-panel')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  })
+}
+
+// Initialize with today's date if it has events
 onMounted(() => {
   const today = new Date()
-  currentMonth.value = today.getMonth()
-  currentYear.value = today.getFullYear()
+  const todayDay = today.getDate()
   
-  // Auto-show today's events if any
-  if (isToday(today.getDate())) {
-    selectedDay.value = today.getDate()
+  if (isEventDay(todayDay)) {
+    selectedDay.value = todayDay
     showEventDetails.value = true
   }
 })
 </script>
 
+<style scoped>
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1023px) {
+  .calendar-card {
+    width: 100%;
+  }
+  
+  .events-panel {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Hover effects */
+.event-card:hover {
+  transform: translateY(-2px);
+}
+</style>

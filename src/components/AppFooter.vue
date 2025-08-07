@@ -3,7 +3,7 @@ import { Facebook, Twitter, Instagram } from 'lucide-vue-next'
 </script>
 
 <template>
-  <footer class="bg-gray-800 text-gray-400">
+  <footer class="bg-gradient-to-b from-gray-800 to-gray-900 text-gray-400">
     <div class="container mx-auto px-6 py-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div class="md:col-span-1">

@@ -8,5 +8,17 @@ export default defineConfig({
   server: {
     port: 7000, // Change to your preferred port (e.g., 8080, 5000, etc.)
     open: true, // Optional: Automatically open browser
+    historyApiFallback: true,
   },
+  define: {
+    global: 'window'
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
+
 })

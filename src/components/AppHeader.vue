@@ -79,7 +79,7 @@ onUnmounted(() => {
     <transition enter-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
       enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200 ease-in"
       leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div v-show="isMobileMenuOpen" class="md:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+      <div v-show="isMobileMenuOpen" class="md:hidden fixed h-screen inset-0 bg-black/30 backdrop-blur-sm z-40"
         @click="closeAllMenus">
         <transition enter-active-class="transition-transform duration-300 ease-out" enter-from-class="-translate-x-full"
           enter-to-class="translate-x-0" leave-active-class="transition-transform duration-200 ease-in"
@@ -101,6 +101,7 @@ onUnmounted(() => {
               </router-link>
 
               <router-link to="/donate"
+              @click="closeAllMenus"
                 class="flex items-center justify-center mt-4 mx-4 py-3 rounded-lg bg-gradient-to-r from-gray-600 to-gray-500 text-white font-semibold shadow-sm hover:from-gray-700 hover:to-gray-600 transition-all duration-300">
                 <Gift class="w-5 h-5 mr-2" />
                 Make a Donation
